@@ -2,7 +2,7 @@
 import { db } from "../../firebase/firebaseConfig"
 import { collection, onSnapshot } from 'firebase/firestore';
 
-import { Dados } from "@/components/dados";
+import Dados  from "@/components/dados";
 import { useEffect, useState } from "react";
 
 import {
@@ -25,40 +25,53 @@ import {
   }
 
 
-const Dashboard: React.FC = () => {
+  const Dashboard: React.FC = () => {
     const [negociacoes, setNegociacoes] = useState<Negociacao[]>([]);
+    const [totalAprovado, setTotalAprovado] = useState<number>(0);
+    const [qtdVendas, setQtdVendas] = useState<number>(0);
+    const [percentualSucesso, setPercentualSucesso] = useState<number>(0);
 
-  useEffect(() => {
-    const q = collection(db, "negociacoes");
+    useEffect(() => {
+        const q = collection(db, "negociacoes");
 
-          // Listener para atualizar em tempo real
-          const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        // Listener para atualizar em tempo real
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
             const data: Negociacao[] = querySnapshot.docs.map(doc => ({
-              id: doc.id,
-              ...doc.data(),
+                id: doc.id,
+                ...doc.data(),
             })) as Negociacao[];
-            
+
             setNegociacoes(data);
-          });
-        
-          return () => unsubscribe(); // Remove o listener ao desmontar o componente
-  }, []);
+
+            // Filtra negociações aprovadas
+            const aprovadas = data.filter(negociacao => negociacao.status === "Aprovada");
+
+            // Calcula soma dos valores aprovados
+            const somaAprovados = aprovadas.reduce((acc, negociacao) => acc + negociacao.valor_total, 0);
+            setTotalAprovado(somaAprovados);
+
+            // Quantidade de vendas aprovadas
+            const qtdAprovadas = aprovadas.length;
+            setQtdVendas(qtdAprovadas);
+
+            // Percentual de sucesso
+            const totalNegociacoes = data.length;
+            const percentual = totalNegociacoes > 0 ? (qtdAprovadas / totalNegociacoes) * 100 : 0;
+            setPercentualSucesso(percentual);
+        });
+
+        return () => unsubscribe(); // Remove o listener ao desmontar o componente
+    }, []);
 
     return(
         <>
-
-        {negociacoes && console.log(negociacoes.length)}
-        {negociacoes && negociacoes.map((doc) => (
-          console.log(doc.valor_total)
-        ))}
-
         <section className="grid sm:grid-cols-4  gap-4 mt-5 w-[95%] m-auto">
         <Card>
             <CardHeader>
                 <CardTitle>Qtd. de Negociações</CardTitle>
             </CardHeader>
             <CardContent>
-                <p className="bg-[#D9D9D9] p-3 rounded-[6px]">{negociacoes.length}</p>
+                <p className="bg-[#D9D9D9] p-3 rounded-[6px] text-2xl font-bold">{negociacoes.length ? negociacoes.length : "Carregando..."}</p>
             </CardContent>
      
         </Card>
@@ -69,7 +82,7 @@ const Dashboard: React.FC = () => {
                 <CardTitle>Qtd. de Vendas</CardTitle>
             </CardHeader>
             <CardContent>
-                <p className="bg-[#D9D9D9] p-3 rounded-[6px]">Card Content</p>
+                <p className="bg-[#D9D9D9] p-3 text-2xl font-bold rounded-[6px]">{qtdVendas ? qtdVendas : "Carregando..."}</p>
             </CardContent>
 
         </Card>
@@ -80,7 +93,7 @@ const Dashboard: React.FC = () => {
                 <CardTitle>% de Sucesso</CardTitle>
             </CardHeader>
             <CardContent>
-                <p className="bg-[#D9D9D9] p-3 rounded-[6px]">Card Content</p>
+                <p className="bg-[#D9D9D9] p-3 rounded-[6px] text-2xl font-bold">{percentualSucesso ? percentualSucesso + "%" : "Carregando..."}</p>
             </CardContent>
 
         </Card>
@@ -91,7 +104,9 @@ const Dashboard: React.FC = () => {
                 <CardTitle>Valor de Vendas</CardTitle>
             </CardHeader>
             <CardContent >
-                <p className="bg-[#D9D9D9] p-3 rounded-[6px]">Card Content</p>
+                <p className="bg-[#D9D9D9] p-3 rounded-[6px] text-2xl font-bold">
+                  R$ {totalAprovado ? totalAprovado.toFixed(2) : "Carregando..."}
+                </p>
             </CardContent>
 
         </Card>
@@ -110,43 +125,3 @@ const Dashboard: React.FC = () => {
 
 export default Dashboard;
 
-
-// import React, { useEffect, useState } from 'react';
-// import { collection, onSnapshot } from 'firebase/firestore';
-// import { db } from '../../firebase/firebaseConfig';
-
-// interface Negociacao {
-//   id: string;
-// }
-
-// const MyComponent: React.FC = () => {
-//     const [negociacoes, setNegociacoes] = useState<Negociacao[]>([]);
-
-//   useEffect(() => {
-//     const q = collection(db, "negociacoes");
-
-//           // Listener para atualizar em tempo real
-//           const unsubscribe = onSnapshot(q, (querySnapshot) => {
-//             const data: Negociacao[] = querySnapshot.docs.map(doc => ({
-//               id: doc.id,
-//               ...doc.data(),
-//             })) as Negociacao[];
-            
-//             setNegociacoes(data);
-//           });
-        
-//           return () => unsubscribe(); // Remove o listener ao desmontar o componente
-//   }, []);
-
-//   return (
-//     <div>
-//       {console.log(negociacoes.length)}
-//         {negociacoes && negociacoes.map((doc) => (
-//             <h1>{doc.id}</h1>
-
-//         ))}
-//     </div>
-//   );
-// };
-
-// export default MyComponent;
