@@ -13,18 +13,7 @@ import  { useEffect, useState } from "react";
 import { db } from "../../firebase/firebaseConfig"; // Importa a configuração do Firestore
 import { collection, Timestamp, query, orderBy, onSnapshot  } from "firebase/firestore"; // Importa métodos do Firestore    
 import Modal from "@/components/dialog";
-
-  interface Negociacao {
-    id: string;
-    data_contrato: string;
-    cliente: string;
-    servico_produto: string;
-    valor_total: number;
-    etapas: string;
-    feedback: string;
-    status: string;
-    motivo_perda: string;
-  }
+import { Negociacao } from "@/lib/types"; // Ajuste o caminho conforme necessário
 
   
 function Lancamentos(){

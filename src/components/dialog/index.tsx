@@ -2,10 +2,10 @@ import {  useEffect, useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Negociacao } from "@/components/ui/textarea";
 
 import { db } from "../firebase/firebaseConfig"
 import { collection, addDoc,updateDoc, doc, deleteDoc } from "firebase/firestore";
+import { Negociacao } from "@/lib/types"; // Ajuste o caminho conforme necessário
 
 import {
   Select,
@@ -29,7 +29,7 @@ const Modal: React.FC<ModalProps> = ({ showModal, setShowModal, negociacaoSeleci
     negociacaoSelecionada?.data_contrato ? new Date(negociacaoSelecionada.data_contrato.seconds * 1000).toISOString().split("T")[0] : ""
   );
   const [servicoProduto, setServicoProduto] = useState(negociacaoSelecionada?.servico_produto || "");
-  const [valorTotal, setValorTotal] = useState(negociacaoSelecionada?.valor_total.toString() || "");
+const [valorTotal, setValorTotal] = useState(negociacaoSelecionada?.valor_total?.toString() || "");
   const [feedback, setFeedback] = useState(negociacaoSelecionada?.feedback || "");
   const [status, setStatus] = useState(negociacaoSelecionada?.status || "");
   const [motivoPerda, setMotivoPerda] = useState(negociacaoSelecionada?.motivo_perda || "");
