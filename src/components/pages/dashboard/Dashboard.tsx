@@ -93,7 +93,7 @@ import {
                 <CardTitle>% de Sucesso</CardTitle>
             </CardHeader>
             <CardContent>
-                <p className="bg-[#D9D9D9] p-3 rounded-[6px] text-2xl font-bold">{percentualSucesso ? percentualSucesso + "%" : "Carregando..."}</p>
+                <p className="bg-[#D9D9D9] p-3 rounded-[6px] text-2xl font-bold">{percentualSucesso ? percentualSucesso.toFixed(0) + "%" : "Carregando..."}</p>
             </CardContent>
 
         </Card>
